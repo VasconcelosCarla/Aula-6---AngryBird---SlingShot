@@ -11,19 +11,19 @@ var Events = Matter.Events;
 // Criando o motor de física
 var engine = Engine.create();
 
-// Pegando o mundo do motor para adicionar os corpos
+// Pegando o mundo do motor
 var world = engine.world;
 
 // Criando o renderizador
 var render = Render.create({
-    element: document.body,
-    engine: engine,
-    options: {
-      width: 900,
-      height: 500,
-      wireframes: false,
-      background: "url('assets/bg.webp')"
-    }
+  element: document.body,
+  engine: engine,
+  options: {
+    width: 900,
+    height: 500,
+    wireframes: false,
+    background: "url('assets/bg.webp')"
+  }
 });
 
 // Criando o chão
@@ -34,8 +34,10 @@ var ground = Bodies.rectangle(450, 480, 900, 40, {
   }
 });
 
-// Criando objetos do jogo usando nossas classes
-// slingY = altura | birdBack = passaro mais para tras no couro (aumente se precisar)
+// ------------------------------------------------
+// POSIÇÃO DO PÁSSARO
+// ------------------------------------------------
+
 var slingY = 350;
 var birdBack = 25;
 var slingX = 150 - birdBack;
@@ -43,16 +45,23 @@ var slingX = 150 - birdBack;
 var bird = new Bird(slingX, slingY);
 var slingPoint = { x: slingX, y: slingY };
 
+// ------------------------------------------------
+// ESTILINGUE
+// ------------------------------------------------
+
 var slingshot = new SlingShot(bird.body, slingPoint, {
   scale: 1.5,
   x: 150,
   y: 255,
-  // Elastico visual: distancia das pontas em relacao ao x,y da madeira (multiplica pelo scale)
   forkLeftOffsetX: 20,
   forkLeftOffsetY: 30,
   forkRightOffsetX: 60,
   forkRightOffsetY: 30
 });
+
+// ------------------------------------------------
+// OBJETOS DO JOGO
+// ------------------------------------------------
 
 var pig = new Pig(700, 250);
 
@@ -60,10 +69,12 @@ var box1 = new Box(650, 430, 50, 80, "assets/madeira1.png");
 var box2 = new Box(750, 430, 50, 80, "assets/madeira1.png");
 var box3 = new Box(700, 370, 160, 30, "assets/madeira2.png");
 
-// Colocando o chão no mundo
+// ------------------------------------------------
+// ADICIONANDO AO MUNDO
+// ------------------------------------------------
+
 Composite.add(world, ground);
 
-// Adicionando os objetos do jogo ao mundo
 bird.addToWorld(world);
 slingshot.addToWorld(world);
 pig.addToWorld(world);
@@ -71,13 +82,13 @@ box1.addToWorld(world);
 box2.addToWorld(world);
 box3.addToWorld(world);
 
+// ------------------------------------------------
+// DESENHO DAS CAMADAS
+// ------------------------------------------------
 
-// Depois que o Matter.js desenhar a física,
-// desenhamos as imagens animadas por cima.
 Events.on(render, "afterRender", function() {
   var ctx = render.context;
 
-  // Madeira do estilingue sempre visivel; couro e bandas so antes do lancamento
   slingshot.drawBack(ctx);
   if (slingshot.isAttached()) {
     slingshot.drawBands(ctx);
@@ -90,13 +101,19 @@ Events.on(render, "afterRender", function() {
   pig.draw(ctx);
 });
 
-// Troca os frames do pássaro e do porco
+// ------------------------------------------------
+// ANIMAÇÕES
+// ------------------------------------------------
+
 setInterval(function() {
   bird.animate();
   pig.animate();
 }, 300);
 
-// Arrastar o passaro (couro e elastico acompanham) em qualquer direcao
+// ------------------------------------------------
+// ARRASTAR E LANÇAR O PÁSSARO
+// ------------------------------------------------
+
 var canvas = render.canvas;
 
 function getMousePos(event) {
@@ -128,9 +145,11 @@ canvas.addEventListener("mouseup", onMouseRelease);
 canvas.addEventListener("mouseleave", onMouseRelease);
 window.addEventListener("mouseup", onMouseRelease);
 
-// Rodando a tela
+// ------------------------------------------------
+// INICIANDO O JOGO
+// ------------------------------------------------
+
 Render.run(render);
 
-// Rodando o motor de física
 var runner = Runner.create();
 Runner.run(runner, engine);

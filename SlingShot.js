@@ -20,36 +20,30 @@ class SlingShot {
 
     this.scale = options.scale !== undefined ? options.scale : 1;
 
-    // Canto superior esquerdo da madeira (estilingue-frente / estilingue-tras)
-    this.x = options.x !== undefined ? options.x : 95;
-    this.y = options.y !== undefined ? options.y : 275;
+    // Canto superior esquerdo da madeira
+    this.x = options.x !== undefined ? options.x : 150;
+    this.y = options.y !== undefined ? options.y : 255;
 
-    // Pontas do elastico VISUAL (linhas em drawBands) — relativas a x,y, escalam junto
+    // Pontas do elastico visual — relativas a x,y, escalam junto
     var forkLeftOffsetX = options.forkLeftOffsetX !== undefined ? options.forkLeftOffsetX : 20;
     var forkLeftOffsetY = options.forkLeftOffsetY !== undefined ? options.forkLeftOffsetY : 30;
     var forkRightOffsetX = options.forkRightOffsetX !== undefined ? options.forkRightOffsetX : 60;
     var forkRightOffsetY = options.forkRightOffsetY !== undefined ? options.forkRightOffsetY : 30;
 
-    if (options.forkLeftX !== undefined) {
-      this.forkLeft = { x: options.forkLeftX, y: options.forkLeftY };
-      this.forkRight = { x: options.forkRightX, y: options.forkRightY };
-    } else {
-      this.forkLeft = {
-        x: this.x + forkLeftOffsetX * this.scale,
-        y: this.y + forkLeftOffsetY * this.scale
-      };
-      this.forkRight = {
-        x: this.x + forkRightOffsetX * this.scale,
-        y: this.y + forkRightOffsetY * this.scale
-      };
-    }
+    this.forkLeft = {
+      x: this.x + forkLeftOffsetX * this.scale,
+      y: this.y + forkLeftOffsetY * this.scale
+    };
+    this.forkRight = {
+      x: this.x + forkRightOffsetX * this.scale,
+      y: this.y + forkRightOffsetY * this.scale
+    };
 
     this.forkWidth = 79 * this.scale;
     this.forkHeight = 158 * this.scale;
     this.pouchWidth = 75 * this.scale;
     this.pouchHeight = 41 * this.scale;
 
-    // --- POSICAO RELATIVA AO PASSARO (couro / estilingue.png) ---
     this.pouchOffsetX = (options.pouchOffsetX !== undefined ? options.pouchOffsetX : -37) * this.scale;
     this.pouchOffsetY = (options.pouchOffsetY !== undefined ? options.pouchOffsetY : 18) * this.scale;
 
@@ -71,6 +65,10 @@ class SlingShot {
 
   addToWorld(world) {
     Composite.add(world, this.constraint);
+  }
+
+  isAttached() {
+    return this.attached;
   }
 
   isOnBird(mouseX, mouseY) {
@@ -122,7 +120,6 @@ class SlingShot {
     this.dragging = false;
     this.attached = false;
 
-    // Direcao do lancamento: oposta ao puxao (em direcao as box)
     var dx = this.pointB.x - this.body.position.x;
     var dy = this.pointB.y - this.body.position.y;
 
@@ -136,10 +133,6 @@ class SlingShot {
     });
   }
 
-  isAttached() {
-    return this.attached;
-  }
-
   drawBack(ctx) {
     ctx.drawImage(this.imageBack, this.x, this.y, this.forkWidth, this.forkHeight);
   }
@@ -148,7 +141,6 @@ class SlingShot {
     ctx.drawImage(this.imageFront, this.x, this.y, this.forkWidth, this.forkHeight);
   }
 
-  // Couro e elastico so enquanto o passaro esta preso ao estilingue
   drawPouch(ctx) {
     if (!this.attached) {
       return;
@@ -187,11 +179,6 @@ class SlingShot {
     ctx.moveTo(this.forkRight.x, this.forkRight.y);
     ctx.lineTo(birdX, birdY);
     ctx.stroke();
-  }
-
-  // Alias para compatibilidade com sketch.js
-  drawBase(ctx) {
-    this.drawPouch(ctx);
   }
 
 }
